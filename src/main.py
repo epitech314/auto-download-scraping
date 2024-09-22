@@ -1,8 +1,8 @@
 from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
 
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 # from selenium.common.exceptions import StaleElementReferenceException
 
 import os
@@ -49,6 +49,7 @@ def get_data(url: str):
     
     tab = driver.find_element(By.CSS_SELECTOR, 'a#_idJsp5\\:_idJsp14')
     tab.click()
+    time.sleep(1)
     download_btns_count = len(driver.find_elements(By.LINK_TEXT, "Изтегли броя"))
     
     text = open("./requirements.txt")
@@ -66,14 +67,15 @@ def get_data(url: str):
             download_btns[j].click()
             print("btn cliked")
             
-            popup = driver.find_element(By.PARTIAL_LINK_TEXT, '.rtf')
+            wait = WebDriverWait(driver, 10)
+            popup = wait.until(EC.visibility_of_element_located((By.PARTIAL_LINK_TEXT, '.rtf')))
             popup.click()
             print("popup cliked")
             
             # wait until download has completed.
             is_download_complete(download_dir)
             
-            close_btn = driver.find_element(By.CSS_SELECTOR, "img[src='/DVWeb/img/exit.gif'][onclick='hideDownloadModalPanel()']")
+            close_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "img[src='/DVWeb/img/exit.gif'][onclick='hideDownloadModalPanel()']")))
             close_btn.click()
             print(f"end {i*download_btns_count + j +1}")
             
